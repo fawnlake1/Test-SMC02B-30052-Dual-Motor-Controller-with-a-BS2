@@ -20,7 +20,6 @@
 'Ramps one motor up and then does the same for the second one and then various speeds are tested
 'Code shows the use of a variable to set the speed and how to set it manually.
 '
-'    NOTE... I am NOT a programmer and am in fact a "newbi" so this code is AS-IS!!!
 '
 'Additional Resources;
 '       http://www.parallax.com/detail.asp?product_id=30052
