@@ -1,0 +1,209 @@
+' =========================================================================
+'
+'   File....... Pololu SMC02B Test.BS2
+'   Purpose.... Pololu SMC02B (Parallax #30052) Micro Dual Motor Controller Test
+'   Author..... Jeff Skinner
+'   Started.... 01/08/2009
+'   Updated.... 03/22/2018
+'
+'   {$STAMP BS2}
+'   {$PBASIC 2.5}
+'
+' =========================================================================
+
+
+' -----[ Program Description ]---------------------------------------------
+'After searching the web and manufactures site for hours and finding no good examples of a simple code
+'to test my setup and give me a start on writing code for the SMC02B (Parallax #30052), so I put this together.
+'
+'Tests for proper working of the Pololu SMC02B micro dual motor controller connected to a BS2
+'Ramps one motor up and then does the same for the second one and then various speeds are tested
+'Code shows the use of a variable to set the speed and how to set it manually.
+'
+'    NOTE... I am NOT a programmer and am in fact a "newbi" so this code is AS-IS!!!
+'
+'Additional Resources;
+'       http://www.parallax.com/detail.asp?product_id=30052
+'       http://www.pololu.com/catalog/product/411/resources
+'
+'
+'SEROUT command is made up of...
+'
+'   SEROUT 0,84,[$80, 0, 0, 127]
+'          |  |    |  |  |    |
+'         BS2 Pin  |  |  |    |
+'             |    |  |  |    |
+'            Setup 9600 Baud  |
+'                  |  |  |    |
+'                 Start Byte - Tells SMC02B to pay attention to the rest of the data that follows
+'                     |  |    |
+'                   "0" means 2 motors attached a "1" would mean single motor mode
+'                        |    |
+'                      Motor number and direction byte (see below)
+'                             |
+'                         Motor speed byte - 0 is stopped and 127 is full power
+'
+'
+'SEROUT 0,84,[$80, 0, 0, 61] - Send serial data to the SMC02B on Pin 0 motor 1 speed = 61
+'SEROUT 0,84,[$80, 0, 0, 120] - Send serial data to the SMC02B on Pin 0 motor 1 speed = 120
+'SEROUT 0,84,[$80, 0, 2, speed] - Send serial data to the SMC02B on Pin 0 motor 2 speed (var)
+'
+'In my setup Motor 1 (Left) is Pins 8&9 on the SMC02B and Motor 2 (Right) is Pins 6&7 on the SMC02B
+'
+'Motor number and direction
+'   Motor 1 (Left) - Direction byte... 0=Rev 1=Fwd
+'   Motor 2 (Right) - Direction byte... 2=Rev 3=Fwd
+'
+'To Brake a motor (in reverse only) set the speed byte to 0 so...
+'   SEROUT 0,84,[$80, 0, 2, 0]  would "set the brakes" on motor 2
+'
+' -----[ Revision History ]------------------------------------------------
+'  v1.0... Initial code development
+'  v1.1... Added referance to Parallax #30052 part number and fixed a couple of typo's
+'  v2.0... Uploaded to GitHub and corrected a few spelling errors
+'
+' -----[ I/O Definitions ]-------------------------------------------------
+'P0 - Serial communications between Stamp and SMC02B - (Pin 4 on SMC02B)
+'P2 - SMC02B reset line - (Pin 5 on SMC02B)
+'P8 - Piezo speaker
+'VSS - MUST be connected between Stamp and SMC02B (All grounds need to be tied together)
+'
+Beeper PIN 8   'Piezo speaker's pin for sound feedback - comment out if not desired
+
+' -----[ Constants ]-------------------------------------------------------
+
+#SELECT $STAMP
+  #CASE BS2, BS2E, BS2PE
+    T1200       CON     813
+    T2400       CON     396
+    T4800       CON     188
+    T9600       CON     84
+    T19K2       CON     32
+    TMidi       CON     12
+    T38K4       CON     6
+  #CASE BS2SX, BS2P
+    T1200       CON     2063
+    T2400       CON     1021
+    T4800       CON     500
+    T9600       CON     240
+    T19K2       CON     110
+    TMidi       CON     60
+    T38K4       CON     45
+  #CASE BS2PX
+    T1200       CON     3313
+    T2400       CON     1646
+    T4800       CON     813
+    T9600       CON     396
+    T19K2       CON     188
+    TMidi       CON     108
+    T38K4       CON     84
+#ENDSELECT
+
+SevenBit        CON     $2000
+Inverted        CON     $4000
+Open            CON     $8000
+
+Baud            CON     T9600
+
+
+' -----[ Variables ]-------------------------------------------------------
+'
+'FOR speed = 0 TO 127 - this means go from 0 (no movement) to the max of 127 (full power)
+'FOR speed = 127 TO 0 - this means go from 127 (full power) to 0 (no movement) or "Ramp Down"
+'FOR speed = 0 TO 64 - this means go from 0 (no movement) to 64 (1/2 power - 1/2 of 127)
+'
+speed VAR Byte   'Allows for storing the speed as a variable
+
+' -----[ EEPROM Data ]-----------------------------------------------------
+
+
+' -----[ Initialization ]--------------------------------------------------
+
+Reset:
+HIGH 0  'Take serial line high
+        'Now we toggle the reset line to "wakeup" the SMC20B
+LOW 2   'Reset motor controller
+HIGH 2
+
+' -----[ Program Code ]----------------------------------------------------
+
+Main:
+
+FREQOUT Beeper, 2000, 3000   'Let's you know the program is starting!
+DEBUG CLS, "Reseting..."
+
+PAUSE 100  'Gives time for motor controller to startup
+
+DEBUG "Completed", CR, CR
+
+'Left Motor - (Motor 1) in reverse - send a "0" byte
+DEBUG "Start LEFT motor to full speed then ramp down...", "In Reverse", CR, CR
+ FREQOUT Beeper, 2100, 3500
+FOR speed = 0 TO 127
+SEROUT 0,84,[$80, 0, 0, speed]  '     "direction Byte = 0"
+  PAUSE 200
+  NEXT
+
+DEBUG "Ramping down...", CR, CR
+
+FOR speed = 127 TO 0
+SEROUT 0,84,[$80, 0, 0, speed]  '     "direction Byte = 0"
+  PAUSE 30
+  NEXT
+
+DEBUG CLS
+
+'Right Motor - (Motor 2) in reverse - send a "2" byte
+DEBUG "Start RIGHT motor to full speed then ramp down...", "In Reverse", CR, CR
+ FREQOUT Beeper, 2100, 3500
+FOR speed = 0 TO 127
+SEROUT 0,84,[$80, 0, 2, speed]   '     "direction Byte = 2"
+  PAUSE 200
+  NEXT
+
+DEBUG "Ramping down...", CR, CR
+
+FOR speed = 127 TO 0
+SEROUT 0,84,[$80, 0, 2, speed]   '     "direction Byte = 2"
+  PAUSE 20
+  NEXT
+
+DEBUG CLS
+
+'Dispense with use of variable "speed" and set last speed bit manually
+
+DEBUG "Start LEFT motor to 1/2 speed then switch between forward and reverse...", CR, CR
+  FREQOUT Beeper, 2100, 3500
+
+SEROUT 0,84,[$80, 0, 0, 64]    'left 1/2 rev      "direction Byte = 0"
+  PAUSE 2500
+SEROUT 0,84,[$80, 0, 0, 0]     'left stop         "direction Byte = 0"
+  PAUSE 800
+SEROUT 0,84,[$80, 0, 1, 64]    'left 1/2 fwd      "direction Byte = 1"
+  PAUSE 2500
+SEROUT 0,84,[$80, 0, 0, 0]     'left stop         "direction Byte = 0"
+  PAUSE 800
+
+DEBUG CLS
+
+DEBUG "Start BOTH motors to full speed in forward...", CR, CR
+  FREQOUT Beeper, 2100, 3500
+
+SEROUT 0,84,[$80, 0, 1, 127]     'left full fwd    "direction Byte = 1"
+SEROUT 0,84,[$80, 0, 3, 127]     'right full fwd   "direction Byte = 3"
+  PAUSE 2500
+
+DEBUG "Stop BOTH motors...", CR, CR
+  FREQOUT Beeper, 2100, 3500
+
+SEROUT 0,84,[$80, 0, 1, 0]       'left stop        "direction Byte = 1"
+SEROUT 0,84,[$80, 0, 3, 0]       'right stop       "direction Byte = 3"
+  PAUSE 800
+
+DEBUG CLS, "Finished...", CR, CR
+  FREQOUT Beeper, 2400, 3800
+DEBUG "Make sure and study the code and look carefully at the comments!"
+
+  END
+
+' -----[ Subroutines ]----------------------------------------------------- 
