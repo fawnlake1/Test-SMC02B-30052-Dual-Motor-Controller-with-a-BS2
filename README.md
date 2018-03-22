@@ -39,7 +39,7 @@ https://www.facebook.com/LetsBuildBots/
 ## Credits
 
 Copyright (c) 2009 Jeff Skinner  
-Copyright (C) 2018 Jeff Skinner  
+Copyright (c) 2018 Jeff Skinner  
 
 ## License
 
