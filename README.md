@@ -10,8 +10,11 @@ The attached file will quickly test a pair of DC motors connected to a Stamp and
 Maybe it will help someone down the road.
 
 Have fun,
+
 Jeff
 
 January 2009
+
 Parallax Basic Stamp = BS2 (or simulair)
+
 Pololu SMC02B / 30052 Dual Motor Controller
