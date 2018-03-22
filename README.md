@@ -3,9 +3,7 @@
 ## Versions
 
 v1.0... Initial code development
-
 v1.1... Added referance to Parallax #30052 part number and fixed a couple of typo's
-
 v2.0... Uploaded to GitHub and corrected a few spelling errors
 
 ## Description
@@ -18,7 +16,7 @@ The attached file will quickly test a pair of DC motors connected to a Stamp and
 
 Maybe it will help someone down the road.
 
-Have fun
+Have fun,
 Jeff
 
 Parallax Basic Stamp = BS2 (or simulair)
@@ -58,7 +56,6 @@ This program is free software: you can redistribute it and/or modify
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses>
-
 
 ## Usage
 
