@@ -2,9 +2,9 @@
 
 ## Versions
 
-v1.0... Initial code development
-v1.1... Added referance to Parallax #30052 part number and fixed a couple of typo's
-v2.0... Uploaded to GitHub and corrected a few spelling errors
+v1.0... Initial code development.
+v1.1... Added referance to Parallax #30052 part number and fixed a couple of typo's.
+v2.0... Uploaded to GitHub and corrected a few spelling errors.
 
 ## Description
 
@@ -19,8 +19,8 @@ Maybe it will help someone down the road.
 Have fun,
 Jeff
 
-Parallax Basic Stamp = BS2 (or simulair)
-Pololu SMC02B / 30052 Dual Motor Controller
+Parallax Basic Stamp = BS2 (or simulair).
+Pololu SMC02B / 30052 Dual Motor Controller.
 
 http://www.parallax.com/detail.asp?product_id=30052
 http://www.pololu.com/catalog/product/411/resources
